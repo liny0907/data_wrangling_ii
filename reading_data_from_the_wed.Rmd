@@ -69,11 +69,68 @@ review_titles =
   dynamite_html %>%
   html_elements(".a-text-bold span") %>%
   html_text()
+
+review_stars = 
+  dynamite_html %>%
+  html_elements("#cm_cr-review_list .review-rating") %>%
+  html_text()
+
+review_text = 
+  dynamite_html %>%
+  html_elements(".review-text-content span") %>%
+  html_text()
+
+reviews = tibble(
+  title = review_titles,
+  stars = review_stars,
+  text = review_text
+)
+
 ```
 
+## Try some APIs
 
+Get some data from an API about water
+copy link from the web!!! (click on API, choose CSV or JSON)
+```{r}
+nyc_water = 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.csv") %>% 
+  content()
+```
 
+Let's see what JSON looks like...
+```{r}
+## use JSON may because data is hard to be stored in csv
+nyc_water = 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.json") %>% 
+  content("text") %>%
+  jsonlite::fromJSON() %>%
+  as_tibble()
+```
 
+BRFSS data via API
+```{r}
+brfss_smart2010 = 
+  GET("https://chronicdata.cdc.gov/resource/acme-vg9e.csv") %>% 
+  content() ## there are 134k rows in the dataset on web, here only shows first 1000 rows.
+
+brfss_smart2010 = 
+  GET("https://chronicdata.cdc.gov/resource/acme-vg9e.csv",
+      query = list("$limit" = 5000)) %>% ## here shows first 5000 rows
+  content()
+```
+
+What about pokemon...
+
+```{r}
+poke = 
+  GET("http://pokeapi.co/api/v2/pokemon/1") %>%
+  content()
+
+poke[["name"]]
+poke[["height"]]
+poke[["abilities"]]
+```
 
 
 
